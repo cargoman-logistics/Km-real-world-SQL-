@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KM Real World SQL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 20px;
+  margin: 0;
+}
+
+header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 25px;
+}
+header img { height: 80px; }
+
+.brand { font-size: 32px; font-weight: bold; }
+.brand .km { color: #0b4f79; }
+.brand .rws { color: #e5e7eb; }
+
+.tagline { color: #f97316; font-weight: bold; }
+.subtitle { color: #cbd5f5; }
+.author { color: #94a3b8; }
+
+select, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+button {
+  background: #38bdf8;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.box {
+  background: #020617;
+  padding: 15px;
+  border-left: 4px solid #38bdf8;
+  margin-bottom: 15px;
+}
+
+.learn-box {
+  display: none;
+  background: #020617;
+  padding: 12px;
+  border-left: 4px solid #facc15;
+  margin-bottom: 15px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.hint {
+  border-left: 4px solid #facc15;
+  padding: 8px;
+  margin-top: 5px;
+  background: #020617;
+}
+
+.success {
+  color: #22c55e;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th, td {
+  border: 1px solid #334155;
+  padding: 8px;
+}
+
+.info {
+  cursor: pointer;
+  color: #facc15;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+footer {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #94a3b8;
+  border-top: 1px solid #334155;
+  padding-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="logo.png">
+  <div>
+    <div class="brand"><span class="km">KM</span><span class="rws"> Real World SQL</span></div>
+    <div class="tagline">Build SQL skills, brick by brick</div>
+    <div class="subtitle">Learn SQL the way companies actually use it</div>
+    <div class="author"><em>By Mallesh Gangula</em></div>
+  </div>
+</header>
+
+<div class="box">
+  <strong>Select Level</strong>
+  <select id="level" onchange="loadTasks()">
+    <option value="1">Level 1 (Tasks 1–3)</option>
+    <option value="2">Level 2 (Tasks 4–6)</option>
+    <option value="3">Level 3 (Tasks 7–9)</option>
+    <option value="4">Level 4 (Tasks 10–12)</option>
+    <option value="5">Level 5 (Tasks 13–30)</option>
+  </select>
+
+  <strong>Select Task</strong>
+  <select id="taskSelect" onchange="loadTask()"></select>
+</div>
+
+<div class="box" id="taskBox"></div>
+<div class="learn-box" id="learnBox"></div>
+
+<div class="container">
+<div>
+  <h3>Write SQL Query</h3>
+  <textarea id="query"></textarea>
+  <button onclick="runSQL()">▶ Run Query</button>
+  <button onclick="showHint()">💡 Hint</button>
+  <div id="hints"></div>
+  <div id="success"></div>
+</div>
+
+<div>
+  <h3>Result</h3>
+  <div id="output"></div>
+</div>
+</div>
+
+<footer>
+© 2025 KM Real World SQL · Created by Mallesh Gangula
+</footer>
+
+<script>
+let db, hintIndex = 0;
+
+const tasks = [
+ // LEVEL 1 (1–3)
+ {lvl:1, text:"See all employees", ex:"SELECT * FROM employees;"},
+ {lvl:1, text:"Show employee names and departments", ex:"SELECT name, department FROM employees;"},
+ {lvl:1, text:"Show employee names and salaries", ex:"SELECT name, salary FROM employees;"},
+
+ // LEVEL 2 (4–6)
+ {lvl:2, text:"Employees earning more than 30000", ex:"SELECT * FROM employees WHERE salary > 30000;"},
+ {lvl:2, text:"Employees earning less than 30000", ex:"SELECT * FROM employees WHERE salary < 30000;"},
+ {lvl:2, text:"Employees from HR department", ex:"SELECT * FROM employees WHERE department='HR';"},
+
+ // LEVEL 3 (7–9)
+ {lvl:3, text:"Employees from Admin department", ex:"SELECT * FROM employees WHERE department='Admin';"},
+ {lvl:3, text:"Employees earning exactly 40000", ex:"SELECT * FROM employees WHERE salary=40000;"},
+ {lvl:3, text:"Employee names earning more than 25000", ex:"SELECT name FROM employees WHERE salary > 25000;"},
+
+ // LEVEL 4 (10–12)
+ {lvl:4, text:"Names & salaries of HR employees", ex:"SELECT name, salary FROM employees WHERE department='HR';"},
+ {lvl:4, text:"Admin employees earning more than 30000", ex:"SELECT * FROM employees WHERE salary > 30000;"},
+ {lvl:4, text:"Employees earning exactly 60000", ex:"SELECT * FROM employees WHERE salary=60000;"},
+
+ // LEVEL 5 (13–30)
+ ...Array.from({length:18}, (_,i)=>({
+   lvl:5,
+   text:`Practice task ${i+13} – repeat SELECT & WHERE`,
+   ex:"SELECT * FROM employees;"
+ }))
+];
+
+function loadTasks(){
+  const lvl = Number(level.value);
+  taskSelect.innerHTML="";
+  tasks.filter(t=>t.lvl===lvl).forEach((t,i)=>{
+    const o=document.createElement("option");
+    o.value=i;
+    o.textContent=`Task ${i+1}: ${t.text}`;
+    taskSelect.appendChild(o);
+  });
+  loadTask();
+}
+
+function loadTask(){
+  hintIndex=0;
+  hints.innerHTML="";
+  success.innerHTML="";
+  learnBox.style.display="none";
+
+  const lvl = Number(level.value);
+  const t = tasks.filter(x=>x.lvl===lvl)[taskSelect.value];
+
+  taskBox.innerHTML = `<strong>TASK:</strong> ${t.text}
+    <span class="info" onclick="toggleLearn()">(!)</span>`;
+
+  learnBox.innerHTML = `<strong>Example solution:</strong><br><code>${t.ex}</code>`;
+  query.value="SELECT * FROM employees;";
+}
+
+function toggleLearn(){
+  learnBox.style.display = learnBox.style.display==="none" ? "block" : "none";
+}
+
+function runSQL(){
+  output.innerHTML="";
+  success.innerHTML="";
+  try{
+    const r=db.exec(query.value);
+    if(query.value.toLowerCase().includes("select")){
+      success.innerHTML="✅ Good! You are practicing the right way.";
+    }
+    if(!r.length){ output.innerHTML="No results."; return; }
+    let t="<table><tr>";
+    r[0].columns.forEach(c=>t+=`<th>${c}</th>`);
+    t+="</tr>";
+    r[0].values.forEach(v=>{
+      t+="<tr>"; v.forEach(x=>t+=`<td>${x}</td>`); t+="</tr>";
+    });
+    t+="</table>";
+    output.innerHTML=t;
+  }catch(e){
+    output.innerHTML="❌ SQL Error";
+  }
+}
+
+function showHint(){
+  const hintsArr=[
+    "Use SELECT to choose columns",
+    "Use FROM to select table",
+    "Use WHERE to filter rows"
+  ];
+  if(hintIndex<hintsArr.length){
+    hints.innerHTML+=`<div class="hint">${hintsArr[hintIndex]}</div>`;
+    hintIndex++;
+  }
+}
+
+initSqlJs({ locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${f}`})
+.then(SQL=>{
+  db=new SQL.Database();
+  db.run(`
+    CREATE TABLE employees(id INT,name TEXT,department TEXT,salary INT);
+    INSERT INTO employees VALUES
+    (1,'Zeb','Admin',40000),
+    (2,'Arjun','HR',60000),
+    (3,'Sana','HR',25000);
+  `);
+  loadTasks();
+});
+</script>
+
+</body>
+</html>
