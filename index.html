@@ -3,147 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <title>KM Real World SQL</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
 <style>
+/* ===== GLOBAL ===== */
 html, body {
-  height: 100%;
   margin: 0;
+  padding: 0;
 }
 
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(180deg, #020617, #0f172a);
   color: #e5e7eb;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ===== HEADER ===== */
 header {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #1e293b;
+  text-align: center;
+  padding: 28px 16px;
 }
 
-header img { height: 60px; }
+header img {
+  width: 130px;
+  margin-bottom: 14px;
+}
 
-.brand {
-  font-size: 26px;
+h1 {
+  font-size: 34px;
+  margin: 0;
   font-weight: bold;
 }
-.brand .km { color: #38bdf8; }
-.brand .rws { color: #e5e7eb; }
 
-.tagline {
-  font-size: 13px;
-  color: #f97316;
-}
-
-/* ===== MAIN LAYOUT ===== */
-.app {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 260px 1fr 300px;
-  min-height: 0;
-}
-
-/* ===== LEFT PANEL ===== */
-.sidebar {
-  padding: 16px;
-  border-right: 1px solid #1e293b;
-}
-
-.sidebar h4 {
-  margin-top: 0;
+h1 span {
   color: #38bdf8;
 }
 
-select {
+.tagline {
+  font-size: 17px;
+  color: #f97316;
+  margin-top: 6px;
+}
+
+.author {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  padding: 18px 16px;
+}
+
+.box {
+  background: rgba(2, 6, 23, 0.85);
+  border-left: 4px solid #38bdf8;
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.box h2 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.box p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #cbd5f5;
+}
+
+/* ===== INPUTS ===== */
+select, textarea, button {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
+  padding: 14px;
+  margin-top: 10px;
   background: #020617;
   color: #e5e7eb;
   border: 1px solid #334155;
   border-radius: 6px;
-}
-
-/* ===== CENTER WORKSPACE ===== */
-.workspace {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  gap: 12px;
-}
-
-.task-box {
-  background: #020617;
-  border-left: 4px solid #38bdf8;
-  padding: 12px;
-  border-radius: 6px;
-}
-
-.editor {
-  flex: 1;
-  display: flex;
-  gap: 12px;
+  font-size: 16px;
 }
 
 textarea {
-  flex: 1;
-  min-height: 260px;
-  background: #020617;
-  color: #e5e7eb;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 12px;
-  font-size: 14px;
-}
-
-.result {
-  flex: 1;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 12px;
-  overflow: auto;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
+  min-height: 200px;
+  font-family: monospace;
 }
 
 button {
-  flex: 1;
-  padding: 12px;
   background: #38bdf8;
   color: #000;
-  border: none;
-  border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
 }
 
-/* ===== RIGHT GUIDE PANEL ===== */
-.guide {
-  padding: 16px;
-  border-left: 1px solid #1e293b;
-  background: rgba(2,6,23,0.7);
+button:active {
+  transform: scale(0.98);
 }
 
-.guide h4 {
-  color: #facc15;
-  margin-top: 0;
-}
-
-.guide p {
+/* ===== RESULT ===== */
+.result {
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+  overflow-x: auto;
   font-size: 14px;
-  line-height: 1.6;
-  color: #cbd5f5;
 }
 
 /* ===== TABLE ===== */
@@ -153,155 +122,133 @@ table {
 }
 th, td {
   border: 1px solid #334155;
-  padding: 6px;
-  font-size: 13px;
+  padding: 8px;
 }
 
 /* ===== FOOTER ===== */
 footer {
   text-align: center;
-  padding: 10px;
+  padding: 18px;
   font-size: 12px;
   color: #94a3b8;
-  border-top: 1px solid #1e293b;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 900px) {
-  .app {
-    grid-template-columns: 1fr;
-  }
-  .sidebar, .guide {
-    border: none;
-  }
-  .editor {
-    flex-direction: column;
-  }
+  border-top: 1px solid #334155;
 }
 </style>
 </head>
 
 <body>
 
+<!-- ===== HEADER ===== -->
 <header>
-  <img src="logo.png">
-  <div>
-    <div class="brand"><span class="km">KM</span><span class="rws"> Real World SQL</span></div>
-    <div class="tagline">Build SQL skills, brick by brick</div>
-  </div>
+  <img src="logo.png" alt="KM Real World SQL Logo">
+  <h1><span>KM</span> Real World SQL</h1>
+  <div class="tagline">Build SQL skills, brick by brick</div>
+  <div class="author">By Mallesh Gangula</div>
 </header>
 
-<div class="app">
-
-  <!-- LEFT -->
-  <aside class="sidebar">
-    <h4>Progress</h4>
-    <label>Level</label>
-    <select id="level" onchange="loadTasks()">
-      <option value="1">Level 1 (Basics)</option>
-      <option value="2">Level 2</option>
-      <option value="3">Level 3</option>
-      <option value="4">Level 4</option>
-      <option value="5">Level 5</option>
-    </select>
-
-    <label>Task</label>
-    <select id="taskSelect" onchange="loadTask()"></select>
-  </aside>
-
-  <!-- CENTER -->
-  <main class="workspace">
-    <div class="task-box" id="taskBox"></div>
-
-    <div class="editor">
-      <textarea id="query"></textarea>
-      <div class="result" id="output">Run a query to see results</div>
-    </div>
-
-    <div class="actions">
-      <button onclick="runSQL()">▶ Run Query</button>
-      <button onclick="showHint()">💡 Hint</button>
-    </div>
-  </main>
-
-  <!-- RIGHT -->
-  <aside class="guide">
-    <h4>How to work here</h4>
+<!-- ===== EDUCATION SECTION ===== -->
+<div class="section">
+  <div class="box">
+    <h2>What is SQL?</h2>
     <p>
-      • This center area is your SQL workspace<br>
-      • Write queries freely and experiment<br>
-      • Results appear instantly on the right<br>
-      • Progress step-by-step, not fast<br><br>
-      The goal is confidence, not speed.
+      SQL (Structured Query Language) is used to communicate with databases.
+      Companies use SQL to fetch data, analyze information, and make business decisions.
+      If you understand SQL, you can work with real-world company data confidently.
     </p>
-  </aside>
+  </div>
 
+  <div class="box">
+    <h2>Why SQL is important</h2>
+    <p>
+      • Every company stores data in databases<br>
+      • SQL helps you read and filter that data<br>
+      • Developers, analysts, and managers all use SQL<br>
+      • SQL is about logic, not memorization
+    </p>
+  </div>
+
+  <div class="box">
+    <h2>How to learn SQL here</h2>
+    <p>
+      • Start with simple SELECT queries<br>
+      • Understand what each line does<br>
+      • Practice by typing queries yourself<br>
+      • Use logic before using hints<br>
+      • Confidence comes from repetition
+    </p>
+  </div>
 </div>
 
+<!-- ===== PRACTICE SECTION ===== -->
+<div class="section">
+  <div class="box">
+    <h2>Practice 1: See all employees</h2>
+
+    <p>
+      This is the most basic SQL query.  
+      It shows all data from a table.
+    </p>
+
+    <textarea id="query">SELECT * FROM employees;</textarea>
+
+    <button onclick="runSQL()">▶ Run Query</button>
+
+    <div class="result" id="output">Result will appear here</div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
 <footer>
-© 2025 KM Real World SQL · Created by Mallesh Gangula
+© 2025 KM Real World SQL · Created by Mallesh Gangula  
+All rights reserved.
 </footer>
 
+<!-- ===== SQL LOGIC ===== -->
 <script>
 let db;
 
-const tasks = {
-  1: ["See all employees", "Select name & department", "Select name & salary"],
-  2: ["Salary > 30000", "Salary < 30000", "Department = HR"],
-  3: ["Department = Admin", "Salary = 40000", "Names salary > 25000"],
-  4: ["HR names & salary", "Admin salary > 30000", "Salary = 60000"],
-  5: Array.from({length:18},(_,i)=>`Practice task ${i+13}`)
-};
+function runSQL() {
+  try {
+    const result = db.exec(query.value);
+    if (!result.length) {
+      output.innerHTML = "No results found.";
+      return;
+    }
 
-function loadTasks(){
-  taskSelect.innerHTML="";
-  tasks[level.value].forEach((t,i)=>{
-    const o=document.createElement("option");
-    o.value=i;
-    o.textContent=`Task ${i+1}: ${t}`;
-    taskSelect.appendChild(o);
-  });
-  loadTask();
-}
+    let table = "<table><tr>";
+    result[0].columns.forEach(col => table += `<th>${col}</th>`);
+    table += "</tr>";
 
-function loadTask(){
-  const t = tasks[level.value][taskSelect.value];
-  taskBox.innerHTML = `<strong>TASK:</strong> ${t}`;
-  query.value = "SELECT * FROM employees;";
-}
-
-function runSQL(){
-  try{
-    const r=db.exec(query.value);
-    if(!r.length){ output.innerHTML="No results"; return; }
-    let h="<table><tr>";
-    r[0].columns.forEach(c=>h+=`<th>${c}</th>`);
-    h+="</tr>";
-    r[0].values.forEach(v=>{
-      h+="<tr>"; v.forEach(x=>h+=`<td>${x}</td>`); h+="</tr>";
+    result[0].values.forEach(row => {
+      table += "<tr>";
+      row.forEach(cell => table += `<td>${cell}</td>`);
+      table += "</tr>";
     });
-    h+="</table>";
-    output.innerHTML=h;
-  }catch{
-    output.innerHTML="SQL Error";
+
+    table += "</table>";
+    output.innerHTML = table;
+  } catch (e) {
+    output.innerHTML = "❌ SQL Error. Check your query.";
   }
 }
 
-function showHint(){
-  alert("Use SELECT, FROM, and WHERE. Keep it simple.");
-}
-
-initSqlJs({ locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${f}`})
-.then(SQL=>{
-  db=new SQL.Database();
+initSqlJs({
+  locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+}).then(SQL => {
+  db = new SQL.Database();
   db.run(`
-    CREATE TABLE employees(id INT,name TEXT,department TEXT,salary INT);
+    CREATE TABLE employees (
+      id INTEGER,
+      name TEXT,
+      department TEXT,
+      salary INTEGER
+    );
+
     INSERT INTO employees VALUES
-    (1,'Zeb','Admin',40000),
-    (2,'Arjun','HR',60000),
-    (3,'Sana','HR',25000);
+    (1, 'Zeb', 'Admin', 40000),
+    (2, 'Arjun', 'HR', 60000),
+    (3, 'Sana', 'HR', 25000);
   `);
-  loadTasks();
 });
 </script>
 
