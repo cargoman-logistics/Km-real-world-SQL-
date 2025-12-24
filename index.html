@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>KM Real World SQL</title>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
 <style>
-/* ===== GLOBAL ===== */
 html, body {
   margin: 0;
   padding: 0;
@@ -22,18 +20,18 @@ body {
 /* ===== HEADER ===== */
 header {
   text-align: center;
-  padding: 28px 16px;
+  padding: 30px 16px;
 }
 
 header img {
-  width: 130px;
-  margin-bottom: 14px;
+  width: 160px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 12px rgba(56,189,248,0.6));
 }
 
 h1 {
-  font-size: 34px;
+  font-size: 36px;
   margin: 0;
-  font-weight: bold;
 }
 
 h1 span {
@@ -41,24 +39,22 @@ h1 span {
 }
 
 .tagline {
-  font-size: 17px;
+  font-size: 18px;
   color: #f97316;
-  margin-top: 6px;
 }
 
 .author {
   font-size: 14px;
   color: #94a3b8;
-  margin-top: 4px;
 }
 
 /* ===== SECTIONS ===== */
 .section {
-  padding: 18px 16px;
+  padding: 16px;
 }
 
 .box {
-  background: rgba(2, 6, 23, 0.85);
+  background: rgba(2,6,23,0.85);
   border-left: 4px solid #38bdf8;
   border-radius: 10px;
   padding: 18px;
@@ -68,12 +64,6 @@ h1 span {
 .box h2 {
   margin-top: 0;
   font-size: 22px;
-}
-
-.box p {
-  font-size: 15px;
-  line-height: 1.6;
-  color: #cbd5f5;
 }
 
 /* ===== INPUTS ===== */
@@ -97,11 +87,6 @@ button {
   background: #38bdf8;
   color: #000;
   font-weight: bold;
-  cursor: pointer;
-}
-
-button:active {
-  transform: scale(0.98);
 }
 
 /* ===== RESULT ===== */
@@ -112,7 +97,6 @@ button:active {
   padding: 12px;
   margin-top: 12px;
   overflow-x: auto;
-  font-size: 14px;
 }
 
 /* ===== TABLE ===== */
@@ -128,7 +112,7 @@ th, td {
 /* ===== FOOTER ===== */
 footer {
   text-align: center;
-  padding: 18px;
+  padding: 16px;
   font-size: 12px;
   color: #94a3b8;
   border-top: 1px solid #334155;
@@ -138,119 +122,162 @@ footer {
 
 <body>
 
-<!-- ===== HEADER ===== -->
 <header>
-  <img src="logo.png" alt="KM Real World SQL Logo">
+  <img src="logo.png" alt="KM Logo">
   <h1><span>KM</span> Real World SQL</h1>
   <div class="tagline">Build SQL skills, brick by brick</div>
   <div class="author">By Mallesh Gangula</div>
 </header>
 
-<!-- ===== EDUCATION SECTION ===== -->
 <div class="section">
+
+  <!-- SELECTORS -->
   <div class="box">
-    <h2>What is SQL?</h2>
-    <p>
-      SQL (Structured Query Language) is used to communicate with databases.
-      Companies use SQL to fetch data, analyze information, and make business decisions.
-      If you understand SQL, you can work with real-world company data confidently.
-    </p>
+    <h2>Choose your path</h2>
+
+    <select id="field" onchange="loadTasks()">
+      <option value="office">Office / Admin</option>
+      <option value="logistics">Logistics</option>
+      <option value="hospital">Hospital</option>
+    </select>
+
+    <select id="level" onchange="loadTasks()">
+      <option value="1">Level 1 – Basics</option>
+      <option value="2">Level 2 – Filtering</option>
+      <option value="3">Level 3 – Conditions</option>
+    </select>
+
+    <select id="taskSelect" onchange="loadTask()"></select>
   </div>
 
+  <!-- TASK -->
   <div class="box">
-    <h2>Why SQL is important</h2>
-    <p>
-      • Every company stores data in databases<br>
-      • SQL helps you read and filter that data<br>
-      • Developers, analysts, and managers all use SQL<br>
-      • SQL is about logic, not memorization
-    </p>
-  </div>
+    <h2 id="taskTitle"></h2>
+    <p id="taskDesc"></p>
 
-  <div class="box">
-    <h2>How to learn SQL here</h2>
-    <p>
-      • Start with simple SELECT queries<br>
-      • Understand what each line does<br>
-      • Practice by typing queries yourself<br>
-      • Use logic before using hints<br>
-      • Confidence comes from repetition
-    </p>
-  </div>
-</div>
-
-<!-- ===== PRACTICE SECTION ===== -->
-<div class="section">
-  <div class="box">
-    <h2>Practice 1: See all employees</h2>
-
-    <p>
-      This is the most basic SQL query.  
-      It shows all data from a table.
-    </p>
-
-    <textarea id="query">SELECT * FROM employees;</textarea>
-
+    <textarea id="query"></textarea>
     <button onclick="runSQL()">▶ Run Query</button>
 
     <div class="result" id="output">Result will appear here</div>
   </div>
+
+  <!-- EXPLANATION -->
+  <div class="box">
+    <h2>Why this works</h2>
+    <p id="explanation"></p>
+  </div>
+
 </div>
 
-<!-- ===== FOOTER ===== -->
 <footer>
-© 2025 KM Real World SQL · Created by Mallesh Gangula  
-All rights reserved.
+© 2025 KM Real World SQL · Created by Mallesh Gangula
 </footer>
 
-<!-- ===== SQL LOGIC ===== -->
 <script>
 let db;
 
+const tasks = {
+  office: {
+    1: [
+      {
+        title: "See all employees",
+        desc: "View all employee records.",
+        query: "SELECT * FROM employees;",
+        explain: "SELECT * fetches all columns from the employees table."
+      }
+    ],
+    2: [
+      {
+        title: "Salary greater than 30000",
+        desc: "Filter employees by salary.",
+        query: "SELECT * FROM employees WHERE salary > 30000;",
+        explain: "WHERE filters rows based on conditions."
+      }
+    ]
+  },
+  logistics: {
+    1: [
+      {
+        title: "View all shipments",
+        desc: "See all shipments.",
+        query: "SELECT * FROM shipments;",
+        explain: "Used by logistics teams to monitor shipments."
+      }
+    ]
+  },
+  hospital: {
+    1: [
+      {
+        title: "View all patients",
+        desc: "List all patients.",
+        query: "SELECT * FROM patients;",
+        explain: "Hospitals use this to view patient data."
+      }
+    ]
+  }
+};
+
+function loadTasks() {
+  taskSelect.innerHTML = "";
+  const list = tasks[field.value][level.value] || [];
+  list.forEach((t, i) => {
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = `Task ${i + 1}: ${t.title}`;
+    taskSelect.appendChild(o);
+  });
+  loadTask();
+}
+
+function loadTask() {
+  const t = tasks[field.value][level.value][taskSelect.value];
+  taskTitle.innerText = t.title;
+  taskDesc.innerText = t.desc;
+  query.value = t.query;
+  explanation.innerText = t.explain;
+  output.innerHTML = "Result will appear here";
+}
+
 function runSQL() {
   try {
-    const result = db.exec(query.value);
-    if (!result.length) {
-      output.innerHTML = "No results found.";
+    const r = db.exec(query.value);
+    if (!r.length) {
+      output.innerHTML = "No results.";
       return;
     }
-
-    let table = "<table><tr>";
-    result[0].columns.forEach(col => table += `<th>${col}</th>`);
-    table += "</tr>";
-
-    result[0].values.forEach(row => {
-      table += "<tr>";
-      row.forEach(cell => table += `<td>${cell}</td>`);
-      table += "</tr>";
+    let html = "<table><tr>";
+    r[0].columns.forEach(c => html += `<th>${c}</th>`);
+    html += "</tr>";
+    r[0].values.forEach(row => {
+      html += "<tr>";
+      row.forEach(cell => html += `<td>${cell}</td>`);
+      html += "</tr>";
     });
-
-    table += "</table>";
-    output.innerHTML = table;
-  } catch (e) {
-    output.innerHTML = "❌ SQL Error. Check your query.";
+    html += "</table>";
+    output.innerHTML = html;
+  } catch {
+    output.innerHTML = "❌ SQL Error";
   }
 }
 
-initSqlJs({
-  locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
-}).then(SQL => {
+initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${f}` })
+.then(SQL => {
   db = new SQL.Database();
   db.run(`
-    CREATE TABLE employees (
-      id INTEGER,
-      name TEXT,
-      department TEXT,
-      salary INTEGER
-    );
-
+    CREATE TABLE employees(id INT,name TEXT,department TEXT,salary INT);
     INSERT INTO employees VALUES
-    (1, 'Zeb', 'Admin', 40000),
-    (2, 'Arjun', 'HR', 60000),
-    (3, 'Sana', 'HR', 25000);
+    (1,'Zeb','Admin',40000),
+    (2,'Arjun','HR',60000);
+
+    CREATE TABLE shipments(id INT,status TEXT);
+    INSERT INTO shipments VALUES (1,'Pending');
+
+    CREATE TABLE patients(id INT,name TEXT);
+    INSERT INTO patients VALUES (1,'Rahul');
   `);
+  loadTasks();
 });
 </script>
 
 </body>
-</html>
+  </html>
