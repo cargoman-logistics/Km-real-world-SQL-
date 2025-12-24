@@ -7,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
 <style>
-/* ===== GLOBAL FIXES ===== */
+/* ===== GLOBAL ===== */
 html, body {
   height: 100%;
   margin: 0;
@@ -156,6 +156,25 @@ th, td {
   text-align: left;
 }
 
+/* ===== BOTTOM LEARNING SECTION ===== */
+.bottom-info {
+  margin-top: 40px;
+  padding: 24px;
+  background: rgba(2, 6, 23, 0.6);
+  border-radius: 10px;
+  border-left: 4px solid #38bdf8;
+}
+
+.bottom-info h3 {
+  margin-top: 0;
+  color: #38bdf8;
+}
+
+.bottom-info p {
+  line-height: 1.6;
+  color: #cbd5f5;
+}
+
 /* ===== FOOTER ===== */
 footer {
   margin-top: auto;
@@ -166,7 +185,7 @@ footer {
   padding: 12px;
 }
 
-/* ===== MOBILE FIX ===== */
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
@@ -229,6 +248,19 @@ footer {
     <div id="output"></div>
   </div>
 </div>
+
+<!-- 🔽 THIS IS WHAT FILLS THE PAGE PROPERLY -->
+<section class="bottom-info">
+  <h3>How to use this learning page</h3>
+  <p>
+    • Start from <b>Level 1</b> and move step by step<br>
+    • Read the task carefully before writing SQL<br>
+    • Try writing the query yourself first<br>
+    • Use <b>Hint</b> only when you’re stuck<br>
+    • Repeat tasks until SELECT & WHERE feel natural<br><br>
+    This platform is designed to make SQL <b>easy, practical, and confidence-building</b>.
+  </p>
+</section>
 
 </main>
 
