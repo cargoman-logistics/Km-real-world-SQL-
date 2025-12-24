@@ -3,197 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <title>KM Real World SQL</title>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
 <style>
-/* ===== GLOBAL ===== */
 html, body {
   height: 100%;
   margin: 0;
 }
 
-/* ===== BODY ===== */
 body {
   font-family: Arial, sans-serif;
   background: linear-gradient(180deg, #020617, #0f172a);
   color: #e5e7eb;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* ===== MAIN WRAPPER ===== */
-.main-content {
-  flex: 1;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px;
 }
 
 /* ===== HEADER ===== */
 header {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   align-items: center;
-  margin-bottom: 25px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
 }
 
-header img {
-  height: 80px;
-}
+header img { height: 60px; }
 
 .brand {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: bold;
 }
+.brand .km { color: #38bdf8; }
+.brand .rws { color: #e5e7eb; }
 
-.brand .km {
+.tagline {
+  font-size: 13px;
+  color: #f97316;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.app {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  min-height: 0;
+}
+
+/* ===== LEFT PANEL ===== */
+.sidebar {
+  padding: 16px;
+  border-right: 1px solid #1e293b;
+}
+
+.sidebar h4 {
+  margin-top: 0;
   color: #38bdf8;
 }
 
-.brand .rws {
-  color: #e5e7eb;
-}
-
-.tagline {
-  color: #f97316;
-  font-weight: bold;
-}
-
-.subtitle {
-  color: #cbd5f5;
-}
-
-.author {
-  color: #94a3b8;
-}
-
-/* ===== FORM ELEMENTS ===== */
-select, textarea, button {
+select {
   width: 100%;
-  padding: 12px;
-  margin-top: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
   background: #020617;
   color: #e5e7eb;
   border: 1px solid #334155;
   border-radius: 6px;
 }
 
+/* ===== CENTER WORKSPACE ===== */
+.workspace {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+}
+
+.task-box {
+  background: #020617;
+  border-left: 4px solid #38bdf8;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.editor {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+}
+
 textarea {
-  min-height: 120px;
+  flex: 1;
+  min-height: 260px;
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.result {
+  flex: 1;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 12px;
+  overflow: auto;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
 }
 
 button {
+  flex: 1;
+  padding: 12px;
   background: #38bdf8;
   color: #000;
+  border: none;
+  border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.9;
-}
-
-/* ===== BOXES ===== */
-.box {
-  background: rgba(2, 6, 23, 0.85);
+/* ===== RIGHT GUIDE PANEL ===== */
+.guide {
   padding: 16px;
-  border-left: 4px solid #38bdf8;
-  margin-bottom: 16px;
-  border-radius: 6px;
+  border-left: 1px solid #1e293b;
+  background: rgba(2,6,23,0.7);
 }
 
-.learn-box {
-  display: none;
-  background: rgba(2, 6, 23, 0.85);
-  padding: 14px;
-  border-left: 4px solid #facc15;
-  margin-bottom: 16px;
-  border-radius: 6px;
-}
-
-/* ===== GRID ===== */
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-/* ===== HINTS & SUCCESS ===== */
-.hint {
-  border-left: 4px solid #facc15;
-  padding: 8px;
-  margin-top: 6px;
-  background: #020617;
-  border-radius: 4px;
-}
-
-.success {
-  color: #22c55e;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.info {
-  cursor: pointer;
+.guide h4 {
   color: #facc15;
-  font-weight: bold;
-  margin-left: 8px;
+  margin-top: 0;
+}
+
+.guide p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #cbd5f5;
 }
 
 /* ===== TABLE ===== */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
-
 th, td {
   border: 1px solid #334155;
-  padding: 8px;
-  text-align: left;
-}
-
-/* ===== BOTTOM LEARNING SECTION ===== */
-.bottom-info {
-  margin-top: 40px;
-  padding: 24px;
-  background: rgba(2, 6, 23, 0.6);
-  border-radius: 10px;
-  border-left: 4px solid #38bdf8;
-}
-
-.bottom-info h3 {
-  margin-top: 0;
-  color: #38bdf8;
-}
-
-.bottom-info p {
-  line-height: 1.6;
-  color: #cbd5f5;
+  padding: 6px;
+  font-size: 13px;
 }
 
 /* ===== FOOTER ===== */
 footer {
-  margin-top: auto;
   text-align: center;
+  padding: 10px;
   font-size: 12px;
   color: #94a3b8;
-  border-top: 1px solid #334155;
-  padding: 12px;
+  border-top: 1px solid #1e293b;
 }
 
 /* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  .container {
+@media (max-width: 900px) {
+  .app {
     grid-template-columns: 1fr;
   }
-
-  header {
+  .sidebar, .guide {
+    border: none;
+  }
+  .editor {
     flex-direction: column;
-    text-align: center;
   }
 }
 </style>
@@ -201,147 +183,112 @@ footer {
 
 <body>
 
-<main class="main-content">
-
 <header>
-  <img src="logo.png" alt="KM Real World SQL Logo">
+  <img src="logo.png">
   <div>
-    <div class="brand">
-      <span class="km">KM</span>
-      <span class="rws"> Real World SQL</span>
-    </div>
+    <div class="brand"><span class="km">KM</span><span class="rws"> Real World SQL</span></div>
     <div class="tagline">Build SQL skills, brick by brick</div>
-    <div class="subtitle">Learn SQL the way companies actually use it</div>
-    <div class="author"><em>By Mallesh Gangula</em></div>
   </div>
 </header>
 
-<div class="box">
-  <strong>Select Level</strong>
-  <select id="level" onchange="loadTasks()">
-    <option value="1">Level 1 (Tasks 1–3)</option>
-    <option value="2">Level 2 (Tasks 4–6)</option>
-    <option value="3">Level 3 (Tasks 7–9)</option>
-    <option value="4">Level 4 (Tasks 10–12)</option>
-    <option value="5">Level 5 (Tasks 13–30)</option>
-  </select>
+<div class="app">
 
-  <strong>Select Task</strong>
-  <select id="taskSelect" onchange="loadTask()"></select>
+  <!-- LEFT -->
+  <aside class="sidebar">
+    <h4>Progress</h4>
+    <label>Level</label>
+    <select id="level" onchange="loadTasks()">
+      <option value="1">Level 1 (Basics)</option>
+      <option value="2">Level 2</option>
+      <option value="3">Level 3</option>
+      <option value="4">Level 4</option>
+      <option value="5">Level 5</option>
+    </select>
+
+    <label>Task</label>
+    <select id="taskSelect" onchange="loadTask()"></select>
+  </aside>
+
+  <!-- CENTER -->
+  <main class="workspace">
+    <div class="task-box" id="taskBox"></div>
+
+    <div class="editor">
+      <textarea id="query"></textarea>
+      <div class="result" id="output">Run a query to see results</div>
+    </div>
+
+    <div class="actions">
+      <button onclick="runSQL()">▶ Run Query</button>
+      <button onclick="showHint()">💡 Hint</button>
+    </div>
+  </main>
+
+  <!-- RIGHT -->
+  <aside class="guide">
+    <h4>How to work here</h4>
+    <p>
+      • This center area is your SQL workspace<br>
+      • Write queries freely and experiment<br>
+      • Results appear instantly on the right<br>
+      • Progress step-by-step, not fast<br><br>
+      The goal is confidence, not speed.
+    </p>
+  </aside>
+
 </div>
-
-<div class="box" id="taskBox"></div>
-<div class="learn-box" id="learnBox"></div>
-
-<div class="container">
-  <div>
-    <h3>Write SQL Query</h3>
-    <textarea id="query"></textarea>
-    <button onclick="runSQL()">▶ Run Query</button>
-    <button onclick="showHint()">💡 Hint</button>
-    <div id="hints"></div>
-    <div id="success"></div>
-  </div>
-
-  <div>
-    <h3>Result</h3>
-    <div id="output"></div>
-  </div>
-</div>
-
-<!-- 🔽 THIS IS WHAT FILLS THE PAGE PROPERLY -->
-<section class="bottom-info">
-  <h3>How to use this learning page</h3>
-  <p>
-    • Start from <b>Level 1</b> and move step by step<br>
-    • Read the task carefully before writing SQL<br>
-    • Try writing the query yourself first<br>
-    • Use <b>Hint</b> only when you’re stuck<br>
-    • Repeat tasks until SELECT & WHERE feel natural<br><br>
-    This platform is designed to make SQL <b>easy, practical, and confidence-building</b>.
-  </p>
-</section>
-
-</main>
 
 <footer>
 © 2025 KM Real World SQL · Created by Mallesh Gangula
 </footer>
 
 <script>
-let db, hintIndex = 0;
+let db;
 
-const tasks = [
- {lvl:1, text:"See all employees", ex:"SELECT * FROM employees;"},
- {lvl:1, text:"Show names and departments", ex:"SELECT name, department FROM employees;"},
- {lvl:1, text:"Show names and salaries", ex:"SELECT name, salary FROM employees;"},
- {lvl:2, text:"Salary greater than 30000", ex:"SELECT * FROM employees WHERE salary > 30000;"},
- {lvl:2, text:"Salary less than 30000", ex:"SELECT * FROM employees WHERE salary < 30000;"},
- {lvl:2, text:"Employees from HR", ex:"SELECT * FROM employees WHERE department='HR';"},
- {lvl:3, text:"Employees from Admin", ex:"SELECT * FROM employees WHERE department='Admin';"},
- {lvl:3, text:"Salary exactly 40000", ex:"SELECT * FROM employees WHERE salary=40000;"},
- {lvl:3, text:"Names earning more than 25000", ex:"SELECT name FROM employees WHERE salary > 25000;"},
- {lvl:4, text:"HR names and salary", ex:"SELECT name, salary FROM employees WHERE department='HR';"},
- {lvl:4, text:"Admin salary > 30000", ex:"SELECT * FROM employees WHERE salary > 30000;"},
- {lvl:4, text:"Salary exactly 60000", ex:"SELECT * FROM employees WHERE salary=60000;"},
- ...Array.from({length:18},(_,i)=>({lvl:5,text:`Practice task ${i+13}`,ex:"SELECT * FROM employees;"}))
-];
+const tasks = {
+  1: ["See all employees", "Select name & department", "Select name & salary"],
+  2: ["Salary > 30000", "Salary < 30000", "Department = HR"],
+  3: ["Department = Admin", "Salary = 40000", "Names salary > 25000"],
+  4: ["HR names & salary", "Admin salary > 30000", "Salary = 60000"],
+  5: Array.from({length:18},(_,i)=>`Practice task ${i+13}`)
+};
 
 function loadTasks(){
-  const lvl = Number(level.value);
   taskSelect.innerHTML="";
-  tasks.filter(t=>t.lvl===lvl).forEach((t,i)=>{
+  tasks[level.value].forEach((t,i)=>{
     const o=document.createElement("option");
     o.value=i;
-    o.textContent=`Task ${i+1}: ${t.text}`;
+    o.textContent=`Task ${i+1}: ${t}`;
     taskSelect.appendChild(o);
   });
   loadTask();
 }
 
 function loadTask(){
-  hintIndex=0;
-  hints.innerHTML="";
-  success.innerHTML="";
-  learnBox.style.display="none";
-  const lvl=Number(level.value);
-  const t=tasks.filter(x=>x.lvl===lvl)[taskSelect.value];
-  taskBox.innerHTML=`<strong>TASK:</strong> ${t.text}
-    <span class="info" onclick="toggleLearn()">(!)</span>`;
-  learnBox.innerHTML=`<strong>Example:</strong><br><code>${t.ex}</code>`;
-  query.value="SELECT * FROM employees;";
-}
-
-function toggleLearn(){
-  learnBox.style.display = learnBox.style.display==="none"?"block":"none";
+  const t = tasks[level.value][taskSelect.value];
+  taskBox.innerHTML = `<strong>TASK:</strong> ${t}`;
+  query.value = "SELECT * FROM employees;";
 }
 
 function runSQL(){
-  output.innerHTML="";
-  success.innerHTML="";
   try{
     const r=db.exec(query.value);
-    success.innerHTML="✅ Good work! Keep practicing.";
-    if(!r.length){output.innerHTML="No results.";return;}
-    let t="<table><tr>";
-    r[0].columns.forEach(c=>t+=`<th>${c}</th>`);
-    t+="</tr>";
+    if(!r.length){ output.innerHTML="No results"; return; }
+    let h="<table><tr>";
+    r[0].columns.forEach(c=>h+=`<th>${c}</th>`);
+    h+="</tr>";
     r[0].values.forEach(v=>{
-      t+="<tr>";v.forEach(x=>t+=`<td>${x}</td>`);t+="</tr>";
+      h+="<tr>"; v.forEach(x=>h+=`<td>${x}</td>`); h+="</tr>";
     });
-    t+="</table>";
-    output.innerHTML=t;
-  }catch(e){
-    output.innerHTML="❌ SQL Error";
+    h+="</table>";
+    output.innerHTML=h;
+  }catch{
+    output.innerHTML="SQL Error";
   }
 }
 
 function showHint(){
-  const h=["Use SELECT","Use FROM","Use WHERE"];
-  if(hintIndex<h.length){
-    hints.innerHTML+=`<div class="hint">${h[hintIndex]}</div>`;
-    hintIndex++;
-  }
+  alert("Use SELECT, FROM, and WHERE. Keep it simple.");
 }
 
 initSqlJs({ locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${f}`})
