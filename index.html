@@ -2,218 +2,263 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KM Real World SQL</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
+/* =====================
+   THEME VARIABLES
+===================== */
+:root {
+  --bg: #0f172a;
+  --card: #020617;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --border: #334155;
+}
+
+body.light {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #020617;
+  --muted: #475569;
+  --accent: #2563eb;
+  --border: #cbd5e1;
+}
+
+/* =====================
+   GLOBAL
+===================== */
+* {
+  box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(180deg, #020617, #0f172a);
-  color: #e5e7eb;
-}
-
-/* ===== HEADER ===== */
-header {
-  text-align: center;
-  padding: 30px 16px;
-}
-
-header img {
-  width: 160px;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 0 12px rgba(56,189,248,0.6));
-}
-
-h1 {
-  font-size: 36px;
   margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-h1 span {
-  color: #38bdf8;
-}
-
-.tagline {
-  font-size: 18px;
-  color: #f97316;
-}
-
-.author {
-  font-size: 14px;
-  color: #94a3b8;
-}
-
-/* ===== SECTIONS ===== */
-.section {
+.container {
+  max-width: 900px;
+  margin: auto;
   padding: 16px;
 }
 
-.box {
-  background: rgba(2,6,23,0.85);
-  border-left: 4px solid #38bdf8;
+/* =====================
+   HEADER (JobStreet style)
+===================== */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header img {
+  width: 56px;
+  height: 56px;
+}
+
+.header-text h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.header-text p {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.theme-toggle {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+/* =====================
+   CARDS
+===================== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 18px;
-  margin-bottom: 16px;
+  padding: 16px;
+  margin-top: 16px;
 }
 
-.box h2 {
+.card h2 {
   margin-top: 0;
-  font-size: 22px;
+  font-size: 1.1rem;
 }
 
-/* ===== INPUTS ===== */
+/* =====================
+   FORM ELEMENTS
+===================== */
 select, textarea, button {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   margin-top: 10px;
-  background: #020617;
-  color: #e5e7eb;
-  border: 1px solid #334155;
   border-radius: 6px;
-  font-size: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
 }
 
 textarea {
-  min-height: 200px;
+  min-height: 180px;
   font-family: monospace;
 }
 
 button {
-  background: #38bdf8;
-  color: #000;
+  background: var(--accent);
+  color: #fff;
   font-weight: bold;
+  cursor: pointer;
 }
 
-/* ===== RESULT ===== */
-.result {
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 12px;
-  margin-top: 12px;
-  overflow-x: auto;
-}
-
-/* ===== TABLE ===== */
+/* =====================
+   RESULT TABLE
+===================== */
 table {
   width: 100%;
   border-collapse: collapse;
-}
-th, td {
-  border: 1px solid #334155;
-  padding: 8px;
+  margin-top: 10px;
 }
 
-/* ===== FOOTER ===== */
+th, td {
+  border: 1px solid var(--border);
+  padding: 8px;
+  text-align: left;
+}
+
+/* =====================
+   FOOTER
+===================== */
 footer {
   text-align: center;
-  padding: 16px;
-  font-size: 12px;
-  color: #94a3b8;
-  border-top: 1px solid #334155;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 24px 0 10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <img src="logo.png" alt="KM Logo">
-  <h1><span>KM</span> Real World SQL</h1>
-  <div class="tagline">Build SQL skills, brick by brick</div>
-  <div class="author">By Mallesh Gangula</div>
-</header>
+<div class="container">
 
-<div class="section">
+  <!-- HEADER -->
+  <div class="header">
+    <img src="logo.png" alt="Logo">
+    <div class="header-text">
+      <h1>KM Real World SQL</h1>
+      <p>Build SQL skills, brick by brick · By Mallesh Gangula</p>
+    </div>
+    <div class="theme-toggle" onclick="toggleTheme()">🌙</div>
+  </div>
 
-  <!-- SELECTORS -->
-  <div class="box">
-    <h2>Choose your path</h2>
+  <!-- PRACTICE FIRST -->
+  <div class="card">
+    <h2>Practice SQL</h2>
 
     <select id="field" onchange="loadTasks()">
-      <option value="office">Office / Admin</option>
+      <option value="office">Office</option>
       <option value="logistics">Logistics</option>
       <option value="hospital">Hospital</option>
     </select>
 
     <select id="level" onchange="loadTasks()">
-      <option value="1">Level 1 – Basics</option>
-      <option value="2">Level 2 – Filtering</option>
-      <option value="3">Level 3 – Conditions</option>
+      <option value="1">Level 1</option>
+      <option value="2">Level 2</option>
     </select>
 
     <select id="taskSelect" onchange="loadTask()"></select>
-  </div>
-
-  <!-- TASK -->
-  <div class="box">
-    <h2 id="taskTitle"></h2>
-    <p id="taskDesc"></p>
 
     <textarea id="query"></textarea>
-    <button onclick="runSQL()">▶ Run Query</button>
+    <button onclick="runSQL()">Run Query</button>
 
-    <div class="result" id="output">Result will appear here</div>
+    <div id="output"></div>
   </div>
 
-  <!-- EXPLANATION -->
-  <div class="box">
+  <!-- WHY THIS WORKS -->
+  <div class="card">
     <h2>Why this works</h2>
-    <p id="explanation"></p>
+    <p id="explain"></p>
   </div>
+
+  <!-- EDUCATION BELOW -->
+  <div class="card">
+    <h2>What is SQL?</h2>
+    <p>
+      SQL is used by companies to read and analyze data stored in databases.
+      This platform teaches SQL the way it is actually used at work.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>How to learn here</h2>
+    <p>
+      Start with simple queries, understand the logic, and practice repeatedly.
+      Learning SQL is about thinking clearly, not memorizing syntax.
+    </p>
+  </div>
+
+  <footer>
+    © 2025 KM Real World SQL
+  </footer>
 
 </div>
 
-<footer>
-© 2025 KM Real World SQL · Created by Mallesh Gangula
-</footer>
-
 <script>
+/* =====================
+   THEME TOGGLE
+===================== */
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+}
+
+if (localStorage.getItem("theme") === "light") {
+  document.body.classList.add("light");
+}
+
+/* =====================
+   SQL DATA
+===================== */
 let db;
 
 const tasks = {
   office: {
-    1: [
-      {
-        title: "See all employees",
-        desc: "View all employee records.",
-        query: "SELECT * FROM employees;",
-        explain: "SELECT * fetches all columns from the employees table."
-      }
-    ],
-    2: [
-      {
-        title: "Salary greater than 30000",
-        desc: "Filter employees by salary.",
-        query: "SELECT * FROM employees WHERE salary > 30000;",
-        explain: "WHERE filters rows based on conditions."
-      }
-    ]
+    1: [{
+      title: "See all employees",
+      query: "SELECT * FROM employees;",
+      explain: "SELECT * fetches all columns from the employees table."
+    }],
+    2: [{
+      title: "Salary greater than 30000",
+      query: "SELECT * FROM employees WHERE salary > 30000;",
+      explain: "WHERE filters rows based on conditions."
+    }]
   },
   logistics: {
-    1: [
-      {
-        title: "View all shipments",
-        desc: "See all shipments.",
-        query: "SELECT * FROM shipments;",
-        explain: "Used by logistics teams to monitor shipments."
-      }
-    ]
+    1: [{
+      title: "View all shipments",
+      query: "SELECT * FROM shipments;",
+      explain: "Used to monitor all shipments."
+    }]
   },
   hospital: {
-    1: [
-      {
-        title: "View all patients",
-        desc: "List all patients.",
-        query: "SELECT * FROM patients;",
-        explain: "Hospitals use this to view patient data."
-      }
-    ]
+    1: [{
+      title: "View all patients",
+      query: "SELECT * FROM patients;",
+      explain: "Hospitals use this to review patient data."
+    }]
   }
 };
 
@@ -223,7 +268,7 @@ function loadTasks() {
   list.forEach((t, i) => {
     const o = document.createElement("option");
     o.value = i;
-    o.textContent = `Task ${i + 1}: ${t.title}`;
+    o.textContent = t.title;
     taskSelect.appendChild(o);
   });
   loadTask();
@@ -231,18 +276,16 @@ function loadTasks() {
 
 function loadTask() {
   const t = tasks[field.value][level.value][taskSelect.value];
-  taskTitle.innerText = t.title;
-  taskDesc.innerText = t.desc;
   query.value = t.query;
-  explanation.innerText = t.explain;
-  output.innerHTML = "Result will appear here";
+  explain.innerText = t.explain;
+  output.innerHTML = "";
 }
 
 function runSQL() {
   try {
     const r = db.exec(query.value);
     if (!r.length) {
-      output.innerHTML = "No results.";
+      output.innerHTML = "No results";
       return;
     }
     let html = "<table><tr>";
@@ -256,18 +299,17 @@ function runSQL() {
     html += "</table>";
     output.innerHTML = html;
   } catch {
-    output.innerHTML = "❌ SQL Error";
+    output.innerHTML = "SQL Error";
   }
 }
 
-initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${f}` })
-.then(SQL => {
+initSqlJs({
+  locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${f}`
+}).then(SQL => {
   db = new SQL.Database();
   db.run(`
-    CREATE TABLE employees(id INT,name TEXT,department TEXT,salary INT);
-    INSERT INTO employees VALUES
-    (1,'Zeb','Admin',40000),
-    (2,'Arjun','HR',60000);
+    CREATE TABLE employees(id INT,name TEXT,salary INT);
+    INSERT INTO employees VALUES (1,'Zeb',40000),(2,'Arjun',60000);
 
     CREATE TABLE shipments(id INT,status TEXT);
     INSERT INTO shipments VALUES (1,'Pending');
@@ -280,4 +322,4 @@ initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.
 </script>
 
 </body>
-  </html>
+</html>
