@@ -45,47 +45,52 @@ body{
   gap:12px;
   padding:14px 16px;
 }
-.header img{width:44px;height:44px}
-.header h1{margin:0;font-size:1.3rem}
+.header img{width:48px;height:48px}
+.header h1{margin:0;font-size:1.4rem}
 .header p{margin:2px 0 0;font-size:.8rem;color:var(--muted)}
 .toggle{margin-left:auto;cursor:pointer;font-size:1.2rem}
 
 /* MAIN */
 .main{
   flex:1;
-  padding:14px;
+  display:flex;
+  flex-direction:column;
+  padding:16px;
+  gap:16px;
 }
 
-/* CARD */
-.card{
+/* TASK HERO */
+.task-hero{
   background:linear-gradient(180deg,var(--panel),transparent);
   border:1px solid var(--border);
   border-radius:14px;
-  padding:16px;
-  max-width:720px;
-  margin:auto;
+  padding:18px;
 }
+.task-hero h2{margin:0;font-size:1.3rem}
+.task-hero p{margin:6px 0 12px;color:var(--muted)}
 
 /* PROGRESS */
-.progress strong{
-  font-size:.85rem;
-}
+.progress small{color:var(--muted)}
 .bar{
-  height:10px;
+  height:8px;
   background:#020617;
   border-radius:6px;
   overflow:hidden;
-  margin:6px 0 14px;
+  margin:6px 0 12px;
 }
 .fill{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,#38bdf8,#0ea5e9);
+  background:var(--accent);
+  transition:.3s;
 }
 
 /* PRACTICE */
-.practice{display:flex;flex-direction:column;gap:10px}
-label{font-size:.8rem;color:var(--muted)}
+.practice{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 select,textarea,button{
   width:100%;
   padding:12px;
@@ -105,20 +110,20 @@ button{
 
 /* EDUCATION */
 .education{
-  margin-top:14px;
   background:var(--card);
   border:1px solid var(--border);
   border-radius:14px;
-  padding:16px;
+  padding:18px;
 }
 .education h3{margin-top:0}
+.education ul{padding-left:18px}
 
 /* MODAL */
 .modal{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
+  background:rgba(0,0,0,.6);
   padding:20px;
 }
 .modal-content{
@@ -128,11 +133,12 @@ button{
   max-width:600px;
   margin:auto;
 }
-.close{text-align:right;cursor:pointer;color:var(--muted)}
+.close{cursor:pointer;color:var(--muted);text-align:right}
 
+/* FOOTER */
 footer{
   text-align:center;
-  font-size:.7rem;
+  font-size:.75rem;
   color:var(--muted);
   padding:10px;
 }
@@ -152,23 +158,26 @@ footer{
   <div class="toggle" onclick="document.body.classList.toggle('light')">🌙</div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
-<div class="card">
+<div class="task-hero">
 
   <div class="progress">
-    <strong id="progressText"></strong>
+    <small id="progressText">Task 1 of 10</small>
     <div class="bar"><div class="fill" id="progressFill"></div></div>
   </div>
 
   <h2 id="taskTitle"></h2>
-  <p id="taskDesc" style="color:var(--muted)"></p>
+  <p id="taskDesc"></p>
 
   <div class="practice">
-    <label>Choose field</label>
-    <select id="fieldSelect" onchange="changeField()"></select>
+    <select id="fieldSelect" onchange="loadField()">
+      <option value="hospitality">Hospitality</option>
+      <option value="logistics">Logistics</option>
+      <option value="office">Office</option>
+    </select>
 
-    <label>Select task</label>
     <select id="taskSelect" onchange="changeTask()"></select>
 
     <textarea id="sqlBox"></textarea>
@@ -184,9 +193,9 @@ footer{
 
   <h3>Learning tips</h3>
   <ul>
-    <li>Translate business problem into data need</li>
-    <li>SQL answers questions, not syntax</li>
-    <li>Progress is saved automatically</li>
+    <li>Read the task before writing SQL</li>
+    <li>Think what data is needed</li>
+    <li>❗ explains the thinking, not just the answer</li>
   </ul>
 </div>
 
@@ -206,81 +215,75 @@ footer{
 
 <script>
 const data={
-Hospitality:[
-["Show all guests","View all guests","SELECT * FROM guests;","Returns all guest records.","SELECT * fetches all columns."],
-["Guest names","Only names","SELECT name FROM guests;","Shows only names.","Select specific column."]
+hospitality:[
+{t:"Show all guests",d:"View all guests",sql:"SELECT * FROM guests;",why:"We want all rows and columns.",exp:"Use SELECT * when you need everything."},
+{t:"Guest names",d:"Only guest names",sql:"SELECT name FROM guests;",why:"Select specific columns.",exp:"Mention column names instead of *."},
+{t:"Checked-in guests",d:"Filter by status",sql:"SELECT * FROM guests WHERE status='Checked In';",why:"WHERE filters rows.",exp:"Text values need quotes."},
+{t:"Room above 200",d:"Numeric filter",sql:"SELECT * FROM guests WHERE room_no>200;",why:"Filters numeric values.",exp:"Numbers don’t use quotes."},
+{t:"Limit results",d:"Show few rows",sql:"SELECT * FROM guests LIMIT 5;",why:"LIMIT reduces output.",exp:"LIMIT controls rows count."},
+{t:"Room numbers",d:"Room list",sql:"SELECT room_no FROM guests;",why:"Single column selection.",exp:"You can select one column."},
+{t:"Guest & room",d:"Two columns",sql:"SELECT name,room_no FROM guests;",why:"Multiple columns.",exp:"Separate columns by comma."},
+{t:"Sort by room",d:"Order data",sql:"SELECT * FROM guests ORDER BY room_no;",why:"ORDER BY sorts rows.",exp:"Default order is ASC."},
+{t:"Distinct rooms",d:"Remove duplicates",sql:"SELECT DISTINCT room_no FROM guests;",why:"DISTINCT removes duplicates.",exp:"Use DISTINCT carefully."},
+{t:"First 3 guests",d:"Limit rows",sql:"SELECT * FROM guests LIMIT 3;",why:"Limits output.",exp:"LIMIT works after SELECT."}
 ],
-Logistics:[
-["All shipments","View shipments","SELECT * FROM shipments;","Reads shipment table.","Basic SELECT."]
+logistics:[
+{t:"All shipments",d:"View shipments",sql:"SELECT * FROM shipments;",why:"Shows shipment data.",exp:"Basic SELECT."},
+{t:"Pending shipments",d:"Filter status",sql:"SELECT * FROM shipments WHERE status='Pending';",why:"Filters rows.",exp:"WHERE clause."},
+{t:"Shipment ids",d:"ID list",sql:"SELECT id FROM shipments;",why:"Single column.",exp:"Select needed column."},
+{t:"Destinations",d:"Where shipments go",sql:"SELECT destination FROM shipments;",why:"Column select.",exp:"Only required data."},
+{t:"Delivered",d:"Completed shipments",sql:"SELECT * FROM shipments WHERE status='Delivered';",why:"Status filter.",exp:"Text filter."},
+{t:"Sort by date",d:"Order data",sql:"SELECT * FROM shipments ORDER BY ship_date;",why:"Sorts records.",exp:"ORDER BY usage."},
+{t:"Limit 5",d:"Few rows",sql:"SELECT * FROM shipments LIMIT 5;",why:"Limits output.",exp:"LIMIT rows."},
+{t:"Warehouse list",d:"Warehouses",sql:"SELECT * FROM warehouses;",why:"Reads table.",exp:"Simple SELECT."},
+{t:"Suppliers",d:"Supplier list",sql:"SELECT * FROM suppliers;",why:"Reads suppliers.",exp:"Basic read."},
+{t:"Shipment ids only",d:"IDs",sql:"SELECT id FROM shipments;",why:"Column selection.",exp:"One column query."}
 ],
-Office:[
-["All employees","Employee list","SELECT * FROM employees;","Shows employees.","Basic SELECT."]
-],
-Warehouse:[
-["All stock","Stock list","SELECT * FROM stock;","Warehouse inventory.","Basic table read."]
-],
-Retail:[
-["All products","Product list","SELECT * FROM products;","Product table.","Basic SELECT."]
-],
-"IT Support":[
-["All tickets","Support tickets","SELECT * FROM tickets;","Ticket records.","Basic SELECT."]
+office:[
+{t:"All employees",d:"Employee list",sql:"SELECT * FROM employees;",why:"Shows employees.",exp:"Basic SELECT."},
+{t:"Employee names",d:"Names only",sql:"SELECT name FROM employees;",why:"Column select.",exp:"Use column names."},
+{t:"HR staff",d:"Filter dept",sql:"SELECT * FROM employees WHERE department='HR';",why:"Department filter.",exp:"WHERE text."},
+{t:"Salary above 30k",d:"Numeric filter",sql:"SELECT * FROM employees WHERE salary>30000;",why:"Numeric WHERE.",exp:"No quotes for numbers."},
+{t:"Admin staff",d:"Admin dept",sql:"SELECT * FROM employees WHERE department='Admin';",why:"Text filter.",exp:"Quotes required."},
+{t:"Sort by salary",d:"Order rows",sql:"SELECT * FROM employees ORDER BY salary;",why:"ORDER BY sorts.",exp:"ASC default."},
+{t:"Limit 5",d:"Few rows",sql:"SELECT * FROM employees LIMIT 5;",why:"Limits output.",exp:"LIMIT usage."},
+{t:"Employee phones",d:"Contacts",sql:"SELECT name,phone FROM employees;",why:"Two columns.",exp:"Comma separated."},
+{t:"Attendance",d:"Attendance list",sql:"SELECT * FROM attendance;",why:"Reads table.",exp:"Simple read."},
+{t:"Present staff",d:"Filter status",sql:"SELECT * FROM attendance WHERE status='Present';",why:"Status filter.",exp:"WHERE condition."}
 ]
 };
 
-let fieldSelect=document.getElementById("fieldSelect");
-let taskSelect=document.getElementById("taskSelect");
+let currentField="hospitality";
 
-function loadFields(){
-  Object.keys(data).forEach(f=>{
-    let o=document.createElement("option");
-    o.value=f;o.textContent=f;
-    fieldSelect.appendChild(o);
-  });
-}
-
-function changeField(){
-  localStorage.setItem("field",fieldSelect.value);
-  loadTasks();
-}
-
-function loadTasks(){
+function loadField(){
+  currentField=fieldSelect.value;
   taskSelect.innerHTML="";
-  data[fieldSelect.value].forEach((t,i)=>{
+  data[currentField].forEach((x,i)=>{
     let o=document.createElement("option");
     o.value=i;
-    o.textContent=`Task ${i+1}: ${t[0]}`;
+    o.textContent=`Task ${i+1}: ${x.t}`;
     taskSelect.appendChild(o);
   });
   changeTask();
 }
 
 function changeTask(){
-  let f=fieldSelect.value;
-  let i=taskSelect.value;
-  let t=data[f][i];
-
-  taskTitle.innerText=t[0];
-  taskDesc.innerText=t[1];
-  sqlBox.value=t[2];
-  whyText.innerText=t[3];
-  explainText.innerText=t[4];
-
-  progressText.innerText=`${f} · Task ${Number(i)+1} of ${data[f].length}`;
-  progressFill.style.width=((i+1)/data[f].length*100)+"%";
-
-  localStorage.setItem("task",i);
+  const i=taskSelect.value;
+  const t=data[currentField][i];
+  taskTitle.innerText=t.t;
+  taskDesc.innerText=t.d;
+  sqlBox.value=t.sql;
+  whyText.innerText=t.why;
+  explainText.innerText=t.exp;
+  progressFill.style.width=((i+1)/10*100)+"%";
+  progressText.innerText=`Task ${Number(i)+1} of 10`;
 }
 
 function openModal(){modal.style.display="block";}
 function closeModal(){modal.style.display="none";}
 
-loadFields();
-
-fieldSelect.value=localStorage.getItem("field") || "Hospitality";
-changeField();
-taskSelect.value=localStorage.getItem("task") || 0;
-changeTask();
+loadField();
 </script>
 
 </body>
-   </html>
+</html>
