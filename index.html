@@ -45,52 +45,44 @@ body{
   gap:12px;
   padding:14px 16px;
 }
-.header img{width:48px;height:48px}
-.header h1{margin:0;font-size:1.4rem}
+.header img{width:44px;height:44px}
+.header h1{margin:0;font-size:1.3rem}
 .header p{margin:2px 0 0;font-size:.8rem;color:var(--muted)}
 .toggle{margin-left:auto;cursor:pointer;font-size:1.2rem}
 
 /* MAIN */
 .main{
   flex:1;
-  display:flex;
-  flex-direction:column;
-  padding:16px;
-  gap:16px;
+  padding:14px;
 }
 
-/* TASK HERO */
-.task-hero{
+/* CARD */
+.card{
   background:linear-gradient(180deg,var(--panel),transparent);
   border:1px solid var(--border);
   border-radius:14px;
-  padding:18px;
+  padding:16px;
+  max-width:720px;
+  margin:auto;
 }
-.task-hero h2{margin:0;font-size:1.3rem}
-.task-hero p{margin:6px 0 12px;color:var(--muted)}
 
 /* PROGRESS */
-.progress small{color:var(--muted)}
 .bar{
-  height:8px;
+  height:10px;
   background:#020617;
   border-radius:6px;
   overflow:hidden;
-  margin:6px 0 12px;
+  margin:6px 0 14px;
 }
 .fill{
   height:100%;
   width:0%;
-  background:var(--accent);
-  transition:.3s;
+  background:linear-gradient(90deg,#38bdf8,#0ea5e9);
 }
 
 /* PRACTICE */
-.practice{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+.practice{display:flex;flex-direction:column;gap:10px}
+label{font-size:.8rem;color:var(--muted)}
 select,textarea,button{
   width:100%;
   padding:12px;
@@ -108,22 +100,25 @@ button{
   cursor:pointer;
 }
 
-/* EDUCATION */
-.education{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:18px;
+/* RESULT */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
 }
-.education h3{margin-top:0}
-.education ul{padding-left:18px}
+th,td{
+  padding:6px;
+  border-bottom:1px solid var(--border);
+  font-size:.85rem;
+}
+th{color:#9fd9ff}
 
 /* MODAL */
 .modal{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,.65);
   padding:20px;
 }
 .modal-content{
@@ -133,12 +128,11 @@ button{
   max-width:600px;
   margin:auto;
 }
-.close{cursor:pointer;color:var(--muted);text-align:right}
+.close{text-align:right;cursor:pointer;color:var(--muted)}
 
-/* FOOTER */
 footer{
   text-align:center;
-  font-size:.75rem;
+  font-size:.7rem;
   color:var(--muted);
   padding:10px;
 }
@@ -158,45 +152,29 @@ footer{
   <div class="toggle" onclick="document.body.classList.toggle('light')">🌙</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-<div class="task-hero">
-
-  <div class="progress">
-    <small id="progressText">Task 1 of 10</small>
-    <div class="bar"><div class="fill" id="progressFill"></div></div>
-  </div>
+<div class="card">
+  <strong id="progressText"></strong>
+  <div class="bar"><div class="fill" id="progressFill"></div></div>
 
   <h2 id="taskTitle"></h2>
-  <p id="taskDesc"></p>
+  <p id="taskDesc" style="color:var(--muted)"></p>
 
   <div class="practice">
-    <select id="fieldSelect" onchange="loadField()">
-      <option value="hospitality">Hospitality</option>
-      <option value="logistics">Logistics</option>
-      <option value="office">Office</option>
-    </select>
+    <label>Choose field</label>
+    <select id="fieldSelect" onchange="changeField()"></select>
 
+    <label>Select task</label>
     <select id="taskSelect" onchange="changeTask()"></select>
 
     <textarea id="sqlBox"></textarea>
 
-    <button>▶ Run Query</button>
+    <button onclick="runQuery()">▶ Run Query</button>
     <button onclick="openModal()">❗ Understand this</button>
+
+    <div id="result"></div>
   </div>
-</div>
-
-<div class="education">
-  <h3>Why this works</h3>
-  <p id="whyText"></p>
-
-  <h3>Learning tips</h3>
-  <ul>
-    <li>Read the task before writing SQL</li>
-    <li>Think what data is needed</li>
-    <li>❗ explains the thinking, not just the answer</li>
-  </ul>
 </div>
 
 </div>
@@ -214,75 +192,109 @@ footer{
 </div>
 
 <script>
-const data={
-hospitality:[
-{t:"Show all guests",d:"View all guests",sql:"SELECT * FROM guests;",why:"We want all rows and columns.",exp:"Use SELECT * when you need everything."},
-{t:"Guest names",d:"Only guest names",sql:"SELECT name FROM guests;",why:"Select specific columns.",exp:"Mention column names instead of *."},
-{t:"Checked-in guests",d:"Filter by status",sql:"SELECT * FROM guests WHERE status='Checked In';",why:"WHERE filters rows.",exp:"Text values need quotes."},
-{t:"Room above 200",d:"Numeric filter",sql:"SELECT * FROM guests WHERE room_no>200;",why:"Filters numeric values.",exp:"Numbers don’t use quotes."},
-{t:"Limit results",d:"Show few rows",sql:"SELECT * FROM guests LIMIT 5;",why:"LIMIT reduces output.",exp:"LIMIT controls rows count."},
-{t:"Room numbers",d:"Room list",sql:"SELECT room_no FROM guests;",why:"Single column selection.",exp:"You can select one column."},
-{t:"Guest & room",d:"Two columns",sql:"SELECT name,room_no FROM guests;",why:"Multiple columns.",exp:"Separate columns by comma."},
-{t:"Sort by room",d:"Order data",sql:"SELECT * FROM guests ORDER BY room_no;",why:"ORDER BY sorts rows.",exp:"Default order is ASC."},
-{t:"Distinct rooms",d:"Remove duplicates",sql:"SELECT DISTINCT room_no FROM guests;",why:"DISTINCT removes duplicates.",exp:"Use DISTINCT carefully."},
-{t:"First 3 guests",d:"Limit rows",sql:"SELECT * FROM guests LIMIT 3;",why:"Limits output.",exp:"LIMIT works after SELECT."}
-],
-logistics:[
-{t:"All shipments",d:"View shipments",sql:"SELECT * FROM shipments;",why:"Shows shipment data.",exp:"Basic SELECT."},
-{t:"Pending shipments",d:"Filter status",sql:"SELECT * FROM shipments WHERE status='Pending';",why:"Filters rows.",exp:"WHERE clause."},
-{t:"Shipment ids",d:"ID list",sql:"SELECT id FROM shipments;",why:"Single column.",exp:"Select needed column."},
-{t:"Destinations",d:"Where shipments go",sql:"SELECT destination FROM shipments;",why:"Column select.",exp:"Only required data."},
-{t:"Delivered",d:"Completed shipments",sql:"SELECT * FROM shipments WHERE status='Delivered';",why:"Status filter.",exp:"Text filter."},
-{t:"Sort by date",d:"Order data",sql:"SELECT * FROM shipments ORDER BY ship_date;",why:"Sorts records.",exp:"ORDER BY usage."},
-{t:"Limit 5",d:"Few rows",sql:"SELECT * FROM shipments LIMIT 5;",why:"Limits output.",exp:"LIMIT rows."},
-{t:"Warehouse list",d:"Warehouses",sql:"SELECT * FROM warehouses;",why:"Reads table.",exp:"Simple SELECT."},
-{t:"Suppliers",d:"Supplier list",sql:"SELECT * FROM suppliers;",why:"Reads suppliers.",exp:"Basic read."},
-{t:"Shipment ids only",d:"IDs",sql:"SELECT id FROM shipments;",why:"Column selection.",exp:"One column query."}
-],
-office:[
-{t:"All employees",d:"Employee list",sql:"SELECT * FROM employees;",why:"Shows employees.",exp:"Basic SELECT."},
-{t:"Employee names",d:"Names only",sql:"SELECT name FROM employees;",why:"Column select.",exp:"Use column names."},
-{t:"HR staff",d:"Filter dept",sql:"SELECT * FROM employees WHERE department='HR';",why:"Department filter.",exp:"WHERE text."},
-{t:"Salary above 30k",d:"Numeric filter",sql:"SELECT * FROM employees WHERE salary>30000;",why:"Numeric WHERE.",exp:"No quotes for numbers."},
-{t:"Admin staff",d:"Admin dept",sql:"SELECT * FROM employees WHERE department='Admin';",why:"Text filter.",exp:"Quotes required."},
-{t:"Sort by salary",d:"Order rows",sql:"SELECT * FROM employees ORDER BY salary;",why:"ORDER BY sorts.",exp:"ASC default."},
-{t:"Limit 5",d:"Few rows",sql:"SELECT * FROM employees LIMIT 5;",why:"Limits output.",exp:"LIMIT usage."},
-{t:"Employee phones",d:"Contacts",sql:"SELECT name,phone FROM employees;",why:"Two columns.",exp:"Comma separated."},
-{t:"Attendance",d:"Attendance list",sql:"SELECT * FROM attendance;",why:"Reads table.",exp:"Simple read."},
-{t:"Present staff",d:"Filter status",sql:"SELECT * FROM attendance WHERE status='Present';",why:"Status filter.",exp:"WHERE condition."}
+// ---------------- DATA ----------------
+const tasks={
+Hospitality:[
+["Show all guests","View all guests","SELECT * FROM guests;","Gets all guest rows","SELECT * returns everything"],
+["Checked-in guests","Filter by status","SELECT * FROM guests WHERE status='Checked-in';","Uses WHERE","WHERE filters rows"],
+["Indian guests","Filter country","SELECT * FROM guests WHERE country='India';","Country filter","Simple condition"],
+["Checked-in Indians","AND usage","SELECT * FROM guests WHERE status='Checked-in' AND country='India';","AND logic","AND joins conditions"],
+["Room 101 or 103","OR usage","SELECT * FROM guests WHERE room_no=101 OR room_no=103;","OR logic","OR gives choices"]
 ]
 };
 
-let currentField="hospitality";
+const fakeDB={
+Hospitality:[
+{ id:1,name:"Arjun",room_no:101,status:"Checked-in",country:"India",vip:"Yes"},
+{ id:2,name:"Sana",room_no:102,status:"Checked-out",country:"UAE",vip:"No"},
+{ id:3,name:"Rahul",room_no:103,status:"Checked-in",country:"India",vip:"No"}
+]
+};
 
-function loadField(){
-  currentField=fieldSelect.value;
-  taskSelect.innerHTML="";
-  data[currentField].forEach((x,i)=>{
+let fieldSelect=document.getElementById("fieldSelect");
+let taskSelect=document.getElementById("taskSelect");
+
+function loadFields(){
+  Object.keys(tasks).forEach(f=>{
     let o=document.createElement("option");
-    o.value=i;
-    o.textContent=`Task ${i+1}: ${x.t}`;
+    o.value=f;o.textContent=f;
+    fieldSelect.appendChild(o);
+  });
+}
+
+function changeField(){
+  loadTasks();
+}
+
+function loadTasks(){
+  taskSelect.innerHTML="";
+  tasks[fieldSelect.value].forEach((t,i)=>{
+    let o=document.createElement("option");
+    o.value=i;o.textContent=`Task ${i+1}: ${t[0]}`;
     taskSelect.appendChild(o);
   });
   changeTask();
 }
 
 function changeTask(){
-  const i=taskSelect.value;
-  const t=data[currentField][i];
-  taskTitle.innerText=t.t;
-  taskDesc.innerText=t.d;
-  sqlBox.value=t.sql;
-  whyText.innerText=t.why;
-  explainText.innerText=t.exp;
-  progressFill.style.width=((i+1)/10*100)+"%";
-  progressText.innerText=`Task ${Number(i)+1} of 10`;
+  let f=fieldSelect.value;
+  let i=taskSelect.value;
+  let t=tasks[f][i];
+  taskTitle.innerText=t[0];
+  taskDesc.innerText=t[1];
+  sqlBox.value=t[2];
+  explainText.innerText=t[4];
+  progressText.innerText=`${f} · Task ${+i+1} of ${tasks[f].length}`;
+  progressFill.style.width=((+i+1)/tasks[f].length*100)+"%";
+}
+
+function runQuery(){
+  let query=sqlBox.value.toLowerCase().trim();
+  let rows=[...fakeDB[fieldSelect.value]];
+
+  if(query.includes("where")){
+    let c=query.split("where")[1].replace(";","").trim();
+    if(c.includes(" and ")){
+      let p=c.split(" and ");
+      rows=rows.filter(r=>p.every(x=>match(r,x)));
+    }else if(c.includes(" or ")){
+      let p=c.split(" or ");
+      rows=rows.filter(r=>p.some(x=>match(r,x)));
+    }else{
+      rows=rows.filter(r=>match(r,c));
+    }
+  }
+  render(rows);
+}
+
+function match(r,c){
+  let [k,v]=c.split("=");
+  if(!k||!v)return false;
+  k=k.trim();v=v.replace(/'/g,"").trim();
+  if(!(k in r))return false;
+  return r[k]==v || r[k]==Number(v);
+}
+
+function render(rows){
+  let out=document.getElementById("result");
+  if(!rows.length){out.innerHTML="<p>No results found</p>";return;}
+  let h="<table><tr>";
+  Object.keys(rows[0]).forEach(k=>h+=`<th>${k}</th>`);
+  h+="</tr>";
+  rows.forEach(r=>{
+    h+="<tr>";
+    Object.values(r).forEach(v=>h+=`<td>${v}</td>`);
+    h+="</tr>";
+  });
+  h+="</table>";
+  out.innerHTML=h;
 }
 
 function openModal(){modal.style.display="block";}
 function closeModal(){modal.style.display="none";}
 
-loadField();
+loadFields();
+changeField();
 </script>
 
 </body>
